@@ -1045,7 +1045,7 @@
 			};
 
 			spi1: spi@201000 {
-				status = "okay";
+				status = "disabled";
 			};
 		};
 	};

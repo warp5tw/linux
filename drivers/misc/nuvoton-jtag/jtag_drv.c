@@ -254,6 +254,12 @@ const struct TmsCycle _tmsCycleLookup[][16] = {
 	},
 };
 
+static inline void pspi_dump_regs(struct npcm_pspi *pspi)
+{
+	pr_info("PSPI STAT: 0x%x\n", readb(pspi->base + PSPI_STAT));
+	pr_info("PSPI CTL1: 0x%x\n", readb(pspi->base + PSPI_CTL1));
+}
+
 static inline void set_gpio(struct jtag_info *jtag,
 		unsigned int pin, int value)
 {
@@ -688,12 +694,17 @@ static int npcm_jtag_readwrite_scan(struct jtag_info *jtag,
 			bit_index++;
 		} else {
 			/* transmit using pspi */
+			if (!use_pspi) {
+				jtag_switch_pspi(jtag, true);
+				use_pspi = 1;
+			}
 			/* PSPI is 16 bit transfer mode */
 			timeout = jiffies + msecs_to_jiffies(100);
 			while (readb(pspi->base + PSPI_STAT) &
 					(0x1 << PSPI_STAT_BSY)) {
 				if (time_after(jiffies, timeout)) {
 					jtag_switch_pspi(jtag, false);
+					dev_err(jtag->dev, "PSPI_STAT_BSY timeout\n");
 					return -ETIMEDOUT;
 				}
 				cond_resched();
@@ -710,6 +721,8 @@ static int npcm_jtag_readwrite_scan(struct jtag_info *jtag,
 					(0x1 << PSPI_STAT_RBF))) {
 				if (time_after(jiffies, timeout)) {
 					jtag_switch_pspi(jtag, false);
+					dev_err(jtag->dev, "PSPI_STAT_RBF timeout\n");
+					pspi_dump_regs(&jtag->pspi);
 					return -ETIMEDOUT;
 				}
 				cond_resched();
@@ -1030,6 +1043,7 @@ const struct file_operations npcm_jtag_fops = {
 static int jtag_register_device(struct jtag_info *jtag)
 {
 	struct device *dev = jtag->dev;
+	static int dev_num = 0;
 	int err;
 
 	if (!dev)
@@ -1039,7 +1053,7 @@ static int jtag_register_device(struct jtag_info *jtag)
 	jtag->miscdev.parent = dev;
 	jtag->miscdev.fops =  &npcm_jtag_fops;
 	jtag->miscdev.minor = MISC_DYNAMIC_MINOR;
-	jtag->miscdev.name = kasprintf(GFP_KERNEL, "jtag0");
+	jtag->miscdev.name = kasprintf(GFP_KERNEL, "jtag%d", dev_num++);
 	if (!jtag->miscdev.name)
 		return -ENOMEM;
 
