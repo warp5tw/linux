@@ -746,6 +746,12 @@
 				pinctrl-0 = <&smb15_pins>;
 				status = "disabled";
 			};
+
+			gfxi: gfxi@e000 {
+				compatible = "nuvoton,npcm845-gfxi", "syscon",
+						"simple-mfd";
+				reg = <0xe000 0x100>;
+			};
 		};
 	};
 
