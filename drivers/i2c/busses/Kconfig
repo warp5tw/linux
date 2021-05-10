@@ -815,7 +815,7 @@ config I2C_NPCM7XX
 	depends on ARCH_NPCM || COMPILE_TEST
 	help
 	  If you say yes to this option, support will be included for the
-	  Nuvoton I2C controller, which is available on the NPCM7xx BMC
+	  Nuvoton I2C controller, which is available on the NPCM7xx/NPCM8xx BMC
 	  controller.
 	  Driver can also support slave mode (select I2C_SLAVE).
 
