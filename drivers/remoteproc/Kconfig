@@ -288,6 +288,24 @@ config TI_K3_R5_REMOTEPROC
 	  It's safe to say N here if you're not interested in utilizing
 	  a slave processor.
 
+config NPCM8XX_REMOTEPROC
+	tristate "NPCM8XX remoteproc support"
+	depends on ARCH_NPCM
+	depends on REMOTEPROC
+	select MAILBOX
+	help
+	  Say y here to support NPCM8XX MCU processor via the
+	  remote processor framework.
+
+	  You want to say y here in order to enable AMP
+	  use-cases to run on your platform (dedicated firmware could be
+	  offloaded to the remote MCU processor using this framework).
+
+	  This can be either built-in or a loadable module.
+
+	  It's safe to say N here if you're not interested in utilizing
+	  a slave processor.
+
 endif # REMOTEPROC
 
 endmenu
