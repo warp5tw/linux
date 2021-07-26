@@ -56,7 +56,31 @@
 	};
 
 	memory {
-		reg = <0 0x40000000>;
+		reg = <0 0x20000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		vcd_memory: framebuffer@0x1e200000 {
+			reg = <0x1e200000 0x600000>;
+			no-map;
+		};
+
+		gfx_memory: framebuffer@0x1f000000 {
+			reg = <0x07000000 0xc00000>, <0x0f000000 0xc00000>,
+			<0x1f000000 0xc00000>, <0x3f000000 0xc00000>,
+			<0x7f000000 0xc00000>;
+			no-map;
+		};
+
+		ece_memory: framebuffer@0x1e800000 {
+			reg = <0x1e800000 0x600000>;
+			no-map;
+		};
+
 	};
 
 	iio-hwmon {
@@ -990,6 +1014,77 @@
 
 &ece {
 	status = "okay";
+};
+
+&ohci1 {
+	status = "okay";
+};
+
+&udc0 {
+	status = "okay";
+};
+
+&udc1 {
+	status = "okay";
+};
+
+&udc2 {
+	status = "okay";
+};
+
+&udc3 {
+	status = "okay";
+};
+
+&udc4 {
+	status = "okay";
+};
+
+&udc5 {
+	status = "okay";
+};
+
+&udc6 {
+	status = "okay";
+};
+
+&udc7 {
+	status = "okay";
+};
+
+&udc8 {
+	status = "okay";
+};
+
+&udc9 {
+	status = "okay";
+};
+
+&aes {
+	status = "okay";
+};
+
+&sha {
+	status = "okay";
+};
+
+
+&sdhci0 {
+	status = "okay";
+};
+
+&pcimbox {
+	status = "okay";
+};
+
+&vcd {
+	status = "okay";
+	memory-region = <&vcd_memory>, <&gfx_memory>;
+};
+
+&ece {
+	status = "okay";
+	memory-region = <&ece_memory>;
 };
 
 &watchdog1 {
