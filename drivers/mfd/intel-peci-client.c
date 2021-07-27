@@ -43,6 +43,12 @@ static const struct cpu_gen_info cpu_gen_info_table[] = {
 		.core_max      = CORE_MAX_ON_SKX,
 		.chan_rank_max = CHAN_RANK_MAX_ON_SKX,
 		.dimm_idx_max  = DIMM_IDX_MAX_ON_SKX },
+	{ /* Skylake Xeon */
+		.family        = 6, /* Family code */
+		.model         = 5,
+		.core_max      = CORE_MAX_ON_SKX,
+		.chan_rank_max = CHAN_RANK_MAX_ON_SKX,
+		.dimm_idx_max  = DIMM_IDX_MAX_ON_SKX },
 	{ /* Skylake Xeon D */
 		.family        = 6, /* Family code */
 		.model         = INTEL_FAM6_SKYLAKE_XD,
