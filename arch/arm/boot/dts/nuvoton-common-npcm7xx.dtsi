@@ -281,6 +281,7 @@
 			reg = <0xf0810000 0x10000>;
 			phy-memory = <0x3e200000 0x600000>;
 			interrupts = <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
+			resets = <&rstc NPCM7XX_RESET_IPSRST2 NPCM7XX_RESET_VCD>;
 			status = "disabled";
 			gcr-syscon = <&gcr>;
 			gfxi-syscon = <&gfxi>;
@@ -291,6 +292,7 @@
 			reg = <0xf0820000 0x2000>;
 			phy-memory = <0x3e800000 0x600000>;
 			interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
+			resets = <&rstc NPCM7XX_RESET_IPSRST2 NPCM7XX_RESET_ECE>;
 			status = "disabled";
 		};
 
