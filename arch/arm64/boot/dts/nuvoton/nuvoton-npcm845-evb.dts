@@ -4,6 +4,7 @@
 
 /dts-v1/;
 #include "nuvoton-npcm845.dtsi"
+#include "nuvoton-npcm845-pincfg-evb.dtsi"
 #include <dt-bindings/thermal/thermal.h>
 
 / {
@@ -69,6 +70,8 @@
 		gmac0: eth@f0802000 {
 			phy-mode = "rgmii-id";
 			snps,eee-force-disable;
+			gpios = <&gpio2 14 GPIO_ACTIVE_HIGH>,
+				<&gpio2 15 GPIO_ACTIVE_HIGH>;
 			status = "okay";
 		};
 
@@ -129,6 +132,7 @@
 				#address-cells = <1>;
 				#size-cells = <1>;
 				spi-rx-bus-width = <2>;
+				spi-tx-bus-width = <2>;
 				reg = <0>;
 				spi-max-frequency = <5000000>;
 				partitions@80000000 {
@@ -420,7 +424,19 @@
 		pinctrl-0 = <	&iox1_pins
 				&jtag2_pins
 				&lpc_pins
-				&spix_pins>;
+				&spix_pins
+				&pin70_o
+				&pin108_slew
+				&pin109_slew
+				&pin240_slew
+				&pin241_slew
+				&pin242_slew
+				&pin243_slew
+				&spix_pins
+				&pin4_slew
+				&pin5_slew
+				&pin6_slew
+				&pin7_slew>;
 	};
 };
 
