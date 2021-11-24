@@ -231,8 +231,7 @@
 			compatible = "nuvoton,npcm845-fiu";
 			#address-cells = <1>;
 			#size-cells = <0>;
-			reg = <0x0 0xfb000000 0x0 0x1000>,
-			<0x0 0x80000000 0x0 0x10000000>;
+			reg = <0x0 0xfb000000 0x0 0x1000>;
 			reg-names = "control", "memory";
 			clocks = <&clk NPCM8XX_CLK_SPI0>;
 			clock-names = "clk_ahb";
