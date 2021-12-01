@@ -320,7 +320,7 @@
 
 		vcd:vcd@f0810000 {
 			status = "okay";
-			memory-region = <&vcd_memory>, <&gfx_memory>;
+			memory-region = <&vcd_memory>;
 		};
 
 		ece:ece@f0820000 {
@@ -328,8 +328,8 @@
 			memory-region = <&ece_memory>;
 		};
 
-		apb {
-			/*rstc: rstc@f0801000 {
+		/*apb {
+			rstc: rstc@f0801000 {
 				nuvoton,sw-reset-number = <2>;
 			};*/
 
