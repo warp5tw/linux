@@ -932,15 +932,6 @@
 	pull-down = <0>;
 	host-neg-bit-rate = <15>;
 	status = "okay";
-
-	intel-peci-dimmtemp@30 {
-		compatible = "intel,peci-client";
-		reg = <0x30>;
-	};
-	intel-peci-dimmtemp@31 {
-		compatible = "intel,peci-client";
-		reg = <0x31>;
-	};
 };
 
 &ehci1 {
