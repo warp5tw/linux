@@ -91,7 +91,11 @@ enum i2c_addr {
 
 /* init register and default value required to enable module */
 #define NPCM_I2CSEGCTL			0xE4
+#ifdef CONFIG_ARCH_NPCM7XX
 #define NPCM_I2CSEGCTL_INIT_VAL		0x0333F000
+#else
+#define NPCM_I2CSEGCTL_INIT_VAL		0x9333F000
+#endif
 
 /* Common regs */
 #define NPCM_I2CSDA			0x00
@@ -124,6 +128,8 @@ enum i2c_addr {
  * use this array to get the address or each register.
  */
 #define I2C_NUM_OWN_ADDR 10
+#define I2C_NUM_OWN_ADDR_SUPPORTED 2
+
 static const int npcm_i2caddr[I2C_NUM_OWN_ADDR] = {
 	NPCM_I2CADDR1, NPCM_I2CADDR2, NPCM_I2CADDR3, NPCM_I2CADDR4,
 	NPCM_I2CADDR5, NPCM_I2CADDR6, NPCM_I2CADDR7, NPCM_I2CADDR8,
@@ -227,7 +233,11 @@ static const int npcm_i2caddr[I2C_NUM_OWN_ADDR] = {
 #define NPCM_I2CFIF_CTS_SLVRSTR		BIT(7)
 
 /* NPCM_I2CTXF_CTL reg fields */
+#ifdef CONFIG_ARCH_NPCM7XX
 #define NPCM_I2CTXF_CTL_TX_THR		GENMASK(4, 0)
+#else
+#define NPCM_I2CTXF_CTL_TX_THR		GENMASK(5, 0)
+#endif /*CONFIG_ARCH_NPCM7XX*/
 #define NPCM_I2CTXF_CTL_THR_TXIE	BIT(6)
 
 /* NPCM_I2CT_OUT reg fields */
@@ -236,22 +246,42 @@ static const int npcm_i2caddr[I2C_NUM_OWN_ADDR] = {
 #define NPCM_I2CT_OUT_T_OUTST		BIT(7)
 
 /* NPCM_I2CTXF_STS reg fields */
+#ifdef CONFIG_ARCH_NPCM7XX
 #define NPCM_I2CTXF_STS_TX_BYTES	GENMASK(4, 0)
+#else
+#define NPCM_I2CTXF_STS_TX_BYTES	GENMASK(5, 0)
+#endif /*CONFIG_ARCH_NPCM7XX*/
 #define NPCM_I2CTXF_STS_TX_THST		BIT(6)
 
 /* NPCM_I2CRXF_STS reg fields */
+#ifdef CONFIG_ARCH_NPCM7XX
 #define NPCM_I2CRXF_STS_RX_BYTES	GENMASK(4, 0)
+#else
+#define NPCM_I2CRXF_STS_RX_BYTES	GENMASK(5, 0)
+#endif /*CONFIG_ARCH_NPCM7XX*/
 #define NPCM_I2CRXF_STS_RX_THST		BIT(6)
 
 /* NPCM_I2CFIF_CTL reg fields */
 #define NPCM_I2CFIF_CTL_FIFO_EN		BIT(4)
 
 /* NPCM_I2CRXF_CTL reg fields */
+#ifdef CONFIG_ARCH_NPCM7XX
 #define NPCM_I2CRXF_CTL_RX_THR		GENMASK(4, 0)
+#else
+#define NPCM_I2CRXF_CTL_RX_THR		GENMASK(5, 0)
+#endif /*CONFIG_ARCH_NPCM7XX*/
+#ifdef CONFIG_ARCH_NPCM7XX
 #define NPCM_I2CRXF_CTL_LAST_PEC	BIT(5)
+#else
+#define NPCM_I2CRXF_CTL_LAST_PEC	BIT(7)
+#endif /*CONFIG_ARCH_NPCM7XX*/
 #define NPCM_I2CRXF_CTL_THR_RXIE	BIT(6)
 
+#ifdef CONFIG_ARCH_NPCM7XX
 #define I2C_HW_FIFO_SIZE		16
+#else
+#define I2C_HW_FIFO_SIZE		32
+#endif /* CONFIG_ARCH_NPCM7XX */
 
 /* I2C_VER reg fields */
 #define I2C_VER_VERSION			GENMASK(6, 0)
@@ -392,13 +422,11 @@ static void npcm_i2c_disable(struct npcm_i2c *bus)
 	int i;
 
 	/* select bank 0 for I2C addresses */
-	npcm_i2c_select_bank(bus, I2C_BANK_0);
 
 	/* Slave addresses removal */
-	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++)
+	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++)
 		iowrite8(0, bus->reg + npcm_i2caddr[i]);
 
-	npcm_i2c_select_bank(bus, I2C_BANK_1);
 #endif
 	/* Disable module */
 	i2cctl2 = ioread8(bus->reg + NPCM_I2CCTL2);
@@ -604,7 +632,7 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
 		iowrite8(i2cctl1, bus->reg + NPCM_I2CCTL1);
 		return 0;
 	}
-	if (addr_type == I2C_ARP_ADDR) {
+	else if (addr_type == I2C_ARP_ADDR) {
 		i2cctl3 = ioread8(bus->reg + NPCM_I2CCTL3);
 		if (enable)
 			i2cctl3 |= I2CCTL3_ARPMEN;
@@ -613,16 +641,19 @@ static int npcm_i2c_slave_enable(struct npcm_i2c *bus, enum i2c_addr addr_type,
 		iowrite8(i2cctl3, bus->reg + NPCM_I2CCTL3);
 		return 0;
 	}
+	if ((addr_type > I2C_SLAVE_ADDR2) && (addr_type <= I2C_SLAVE_ADDR10)) {
+		dev_err(bus->dev,
+			"try to enable more then 2 slave addresses not supported\n");
+	}
 	if (addr_type >= I2C_ARP_ADDR)
 		return -EFAULT;
 	/* select bank 0 for address 3 to 10 */
-	if (addr_type > I2C_SLAVE_ADDR2)
-		npcm_i2c_select_bank(bus, I2C_BANK_0);
+
 	/* Set and enable the address */
 	iowrite8(sa_reg, bus->reg + npcm_i2caddr[addr_type]);
 	npcm_i2c_slave_int_enable(bus, enable);
-	if (addr_type > I2C_SLAVE_ADDR2)
-		npcm_i2c_select_bank(bus, I2C_BANK_1);
+
+
 	return 0;
 }
 #endif
@@ -843,14 +874,14 @@ static u8 npcm_i2c_get_slave_addr(struct npcm_i2c *bus, enum i2c_addr addr_type)
 {
 	u8 slave_add;
 
-	/* select bank 0 for address 3 to 10 */
-	if (addr_type > I2C_SLAVE_ADDR2)
-		npcm_i2c_select_bank(bus, I2C_BANK_0);
+
+
+	if ((addr_type > I2C_SLAVE_ADDR2) && (addr_type <= I2C_SLAVE_ADDR10)) {
+		dev_err(bus->dev,
+			"get slave: try to use more then 2 slave addresses not supported\n");
+	}
 
 	slave_add = ioread8(bus->reg + npcm_i2caddr[(int)addr_type]);
-
-	if (addr_type > I2C_SLAVE_ADDR2)
-		npcm_i2c_select_bank(bus, I2C_BANK_1);
 
 	return slave_add;
 }
@@ -861,12 +892,12 @@ static int npcm_i2c_remove_slave_addr(struct npcm_i2c *bus, u8 slave_add)
 
 	/* Set the enable bit */
 	slave_add |= 0x80;
-	npcm_i2c_select_bank(bus, I2C_BANK_0);
-	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR; i++) {
+
+	for (i = I2C_SLAVE_ADDR1; i < I2C_NUM_OWN_ADDR_SUPPORTED; i++) {
 		if (ioread8(bus->reg + npcm_i2caddr[i]) == slave_add)
 			iowrite8(0, bus->reg + npcm_i2caddr[i]);
 	}
-	npcm_i2c_select_bank(bus, I2C_BANK_1);
+
 	return 0;
 }
 
@@ -921,11 +952,15 @@ static int npcm_i2c_slave_get_wr_buf(struct npcm_i2c *bus)
 	for (i = 0; i < I2C_HW_FIFO_SIZE; i++) {
 		if (bus->slv_wr_size >= I2C_HW_FIFO_SIZE)
 			break;
-		i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
+		if (bus->state == I2C_SLAVE_MATCH) {
+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_REQUESTED, &value);
+			bus->state = I2C_OPER_STARTED;
+		} else {
+			i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
+		}
 		ind = (bus->slv_wr_ind + bus->slv_wr_size) % I2C_HW_FIFO_SIZE;
 		bus->slv_wr_buf[ind] = value;
 		bus->slv_wr_size++;
-		i2c_slave_event(bus->slave, I2C_SLAVE_READ_PROCESSED, &value);
 	}
 	return I2C_HW_FIFO_SIZE - ret;
 }
@@ -973,7 +1008,6 @@ static void npcm_i2c_slave_xmit(struct npcm_i2c *bus, u16 nwrite,
 	if (nwrite == 0)
 		return;
 
-	bus->state = I2C_OPER_STARTED;
 	bus->operation = I2C_WRITE_OPER;
 
 	/* get the next buffer */
@@ -2240,7 +2274,43 @@ static const struct i2c_algorithm npcm_i2c_algo = {
 
 /* i2c debugfs directory: used to keep health monitor of i2c devices */
 static struct dentry *npcm_i2c_debugfs_dir;
+#ifdef I2C_MODIFY_SPEED_AT_RUNTIME
+static int i2c_speed_get(void *data, u64 *val)
+{
+	struct npcm_i2c *bus = data;
 
+	*val = bus->bus_freq;
+	return 0;
+}
+
+static int i2c_speed_set(void *data, u64 val)
+{
+	struct npcm_i2c *bus = data;
+	int ret;
+
+	if (val < I2C_FREQ_MIN_HZ || val > I2C_FREQ_MAX_HZ)
+		return -EINVAL;
+
+	if (val == bus->bus_freq)
+		return 0;
+
+	i2c_lock_bus(&bus->adap, I2C_LOCK_ROOT_ADAPTER);
+
+	npcm_i2c_int_enable(bus, false);
+
+	ret = npcm_i2c_init_module(bus, I2C_MASTER, (u32)val);
+
+	i2c_unlock_bus(&bus->adap, I2C_LOCK_ROOT_ADAPTER);
+
+	if (ret)
+		return -EAGAIN;
+
+	npcm_i2c_int_enable(bus, true);
+
+	return 0;
+}
+DEFINE_DEBUGFS_ATTRIBUTE(i2c_clock_ops, i2c_speed_get, i2c_speed_set, "%llu\n");
+#endif
 static void npcm_i2c_init_debugfs(struct platform_device *pdev,
 				  struct npcm_i2c *bus)
 {
@@ -2256,7 +2326,9 @@ static void npcm_i2c_init_debugfs(struct platform_device *pdev,
 	debugfs_create_u64("rec_succ_cnt", 0444, d, &bus->rec_succ_cnt);
 	debugfs_create_u64("rec_fail_cnt", 0444, d, &bus->rec_fail_cnt);
 	debugfs_create_u64("timeout_cnt", 0444, d, &bus->timeout_cnt);
-
+#ifdef I2C_MODIFY_SPEED_AT_RUNTIME
+	debugfs_create_file("i2c_speed", 0644, d, bus, &i2c_clock_ops);
+#endif
 	bus->debugfs = d;
 }
 
@@ -2266,9 +2338,9 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
 	struct i2c_adapter *adap;
 	struct clk *i2c_clk;
 	static struct regmap *gcr_regmap;
-	static struct regmap *clk_regmap;
 	int irq;
 	int ret;
+	struct device_node *np = pdev->dev.of_node;
 
 	bus = devm_kzalloc(&pdev->dev, sizeof(*bus), GFP_KERNEL);
 	if (!bus)
@@ -2283,14 +2355,10 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
 		return PTR_ERR(i2c_clk);
 	bus->apb_clk = clk_get_rate(i2c_clk);
 
-	gcr_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-gcr");
+	gcr_regmap = syscon_regmap_lookup_by_phandle(np, "syscon");
 	if (IS_ERR(gcr_regmap))
 		return PTR_ERR(gcr_regmap);
 	regmap_write(gcr_regmap, NPCM_I2CSEGCTL, NPCM_I2CSEGCTL_INIT_VAL);
-
-	clk_regmap = syscon_regmap_lookup_by_compatible("nuvoton,npcm750-clk");
-	if (IS_ERR(clk_regmap))
-		return PTR_ERR(clk_regmap);
 
 	bus->reg = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(bus->reg))
@@ -2353,6 +2421,7 @@ static int npcm_i2c_remove_bus(struct platform_device *pdev)
 
 static const struct of_device_id npcm_i2c_bus_of_table[] = {
 	{ .compatible = "nuvoton,npcm750-i2c", },
+	{ .compatible = "nuvoton,npcm845-i2c", },
 	{}
 };
 MODULE_DEVICE_TABLE(of, npcm_i2c_bus_of_table);
@@ -2385,3 +2454,4 @@ MODULE_AUTHOR("Tali Perry <tali.perry@nuvoton.com>");
 MODULE_AUTHOR("Tyrone Ting <kfting@nuvoton.com>");
 MODULE_DESCRIPTION("Nuvoton I2C Bus Driver");
 MODULE_LICENSE("GPL v2");
+
