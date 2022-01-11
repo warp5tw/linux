@@ -12,12 +12,19 @@ description: |
   at run time (i.e. IPMB mode). Each controller has two 16 byte HW FIFO for TX and
   RX.
 
+  The NPCM8xx includes twenty-seven I2C bus controllers. All Controllers support
+  both master and slave mode. Each controller can switch between master and slave
+  at run time (i.e. IPMB mode). Each controller has two 32 byte HW FIFO for TX and
+  RX. Controllers 24-26 are connected on I2C pins in parallel to controllers 8-10.
+
 maintainers:
   - Tali Perry <tali.perry1@gmail.com>
 
 properties:
   compatible:
-    const: nuvoton,npcm750-i2c
+    enum:
+      - nuvoton,npcm750-i2c
+      - nuvoton,npcm845-i2c
 
   reg:
     maxItems: 1
@@ -36,11 +43,16 @@ properties:
     default: 100000
     enum: [100000, 400000, 1000000]
 
+  syscon:
+    $ref: "/schemas/types.yaml#/definitions/phandle"
+    description: The phandle of system manager register node.
+
 required:
   - compatible
   - reg
   - interrupts
   - clocks
+  - syscon
 
 allOf:
   - $ref: /schemas/i2c/i2c-controller.yaml#
@@ -57,6 +69,7 @@ examples:
         clock-frequency = <100000>;
         interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
         compatible = "nuvoton,npcm750-i2c";
+        syscon = <&gcr>;
     };
 
 ...
