@@ -371,6 +371,7 @@
 				interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb0_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -383,6 +384,7 @@
 				interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb1_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -395,6 +397,7 @@
 				interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb2_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -407,6 +410,7 @@
 				interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb3_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -419,6 +423,7 @@
 				interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb4_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -431,6 +436,7 @@
 				interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb5_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -443,6 +449,7 @@
 				interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb6_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -455,6 +462,7 @@
 				interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb7_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -467,6 +475,7 @@
 				interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb8_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -479,6 +488,7 @@
 				interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb9_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -491,6 +501,7 @@
 				interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb10_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -503,6 +514,7 @@
 				interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb11_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -515,6 +527,7 @@
 				interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb12_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -527,6 +540,7 @@
 				interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb13_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -539,6 +553,7 @@
 				interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb14_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 
@@ -551,6 +566,7 @@
 				interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
 				pinctrl-names = "default";
 				pinctrl-0 = <&smb15_pins>;
+				nuvoton,sys-mgr = <&gcr>;
 				status = "disabled";
 			};
 		};
