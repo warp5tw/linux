@@ -94,4 +94,3 @@ if VIDEO_NUVOTON
 source "drivers/media/platform/nuvoton/Kconfig"
 
 endif #VIDEO_NUVOTON
->>>>>>> driver: video: add npcm750 vcd and ece driver support

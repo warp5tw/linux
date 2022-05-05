@@ -203,8 +203,8 @@ static int npcmgpio_direction_output(struct gpio_chip *chip,
 	struct npcm8xx_gpio *bank = gpiochip_get_data(chip);
 	int ret;
 
-	dev_dbg(chip->parent, "gpio_direction_output: offset%d = %x\n", offset,
-		value);
+	//dev_dbg(chip->parent, "gpio_direction_output: offset%d = %x\n", offset,
+	//	value);
 
 	ret = pinctrl_gpio_direction_output(offset + chip->base);
 	if (ret)
@@ -218,7 +218,7 @@ static int npcmgpio_gpio_request(struct gpio_chip *chip, unsigned int offset)
 	struct npcm8xx_gpio *bank = gpiochip_get_data(chip);
 	int ret;
 
-	dev_dbg(chip->parent, "gpio_request: offset%d\n", offset);
+	//dev_dbg(chip->parent, "gpio_request: offset%d\n", offset);
 	ret = pinctrl_gpio_request(offset + chip->base);
 	if (ret)
 		return ret;
@@ -228,7 +228,7 @@ static int npcmgpio_gpio_request(struct gpio_chip *chip, unsigned int offset)
 
 static void npcmgpio_gpio_free(struct gpio_chip *chip, unsigned int offset)
 {
-	dev_dbg(chip->parent, "gpio_free: offset%d\n", offset);
+	//dev_dbg(chip->parent, "gpio_free: offset%d\n", offset);
 	pinctrl_gpio_free(offset + chip->base);
 }
 
@@ -246,8 +246,8 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
 	chained_irq_enter(chip, desc);
 	sts = ioread32(bank->base + NPCM8XX_GP_N_EVST);
 	en  = ioread32(bank->base + NPCM8XX_GP_N_EVEN);
-	dev_dbg(chip->parent_device, "==> got irq sts %.8x %.8x\n", sts,
-		en);
+	//dev_dbg(chip->parent_device, "==> got irq sts %.8x %.8x\n", sts,
+	//	en);
 
 	sts &= en;
 	for_each_set_bit(bit, (const void *)&sts, NPCM8XX_GPIO_PER_BANK)
@@ -261,33 +261,33 @@ static int npcmgpio_set_irq_type(struct irq_data *d, unsigned int type)
 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
 	unsigned int gpio = BIT(d->hwirq);
 
-	dev_dbg(d->chip->parent_device, "setirqtype: %u.%u = %u\n", gpio,
-		d->irq, type);
+	//dev_dbg(d->chip->parent_device, "setirqtype: %u.%u = %u\n", gpio,
+		//d->irq, type);
 	switch (type) {
 	case IRQ_TYPE_EDGE_RISING:
-		dev_dbg(d->chip->parent_device, "edge.rising\n");
+		//dev_dbg(d->chip->parent_device, "edge.rising\n");
 		npcm_gpio_clr(&bank->gc, bank->base + NPCM8XX_GP_N_EVBE, gpio);
 		npcm_gpio_clr(&bank->gc, bank->base + NPCM8XX_GP_N_POL, gpio);
 		break;
 	case IRQ_TYPE_EDGE_FALLING:
-		dev_dbg(d->chip->parent_device, "edge.falling\n");
+		//dev_dbg(d->chip->parent_device, "edge.falling\n");
 		npcm_gpio_clr(&bank->gc, bank->base + NPCM8XX_GP_N_EVBE, gpio);
 		npcm_gpio_set(&bank->gc, bank->base + NPCM8XX_GP_N_POL, gpio);
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
-		dev_dbg(d->chip->parent_device, "edge.both\n");
+		//dev_dbg(d->chip->parent_device, "edge.both\n");
 		npcm_gpio_set(&bank->gc, bank->base + NPCM8XX_GP_N_EVBE, gpio);
 		break;
 	case IRQ_TYPE_LEVEL_LOW:
-		dev_dbg(d->chip->parent_device, "level.low\n");
+		//dev_dbg(d->chip->parent_device, "level.low\n");
 		npcm_gpio_set(&bank->gc, bank->base + NPCM8XX_GP_N_POL, gpio);
 		break;
 	case IRQ_TYPE_LEVEL_HIGH:
-		dev_dbg(d->chip->parent_device, "level.high\n");
+		//dev_dbg(d->chip->parent_device, "level.high\n");
 		npcm_gpio_clr(&bank->gc, bank->base + NPCM8XX_GP_N_POL, gpio);
 		break;
 	default:
-		dev_dbg(d->chip->parent_device, "invalid irq type\n");
+		//dev_dbg(d->chip->parent_device, "invalid irq type\n");
 		return -EINVAL;
 	}
 
@@ -309,7 +309,7 @@ static void npcmgpio_irq_ack(struct irq_data *d)
 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
 	unsigned int gpio = d->hwirq;
 
-	dev_dbg(d->chip->parent_device, "irq_ack: %u.%u\n", gpio, d->irq);
+	//dev_dbg(d->chip->parent_device, "irq_ack: %u.%u\n", gpio, d->irq);
 	iowrite32(BIT(gpio), bank->base + NPCM8XX_GP_N_EVST);
 }
 
@@ -321,7 +321,7 @@ static void npcmgpio_irq_mask(struct irq_data *d)
 	unsigned int gpio = d->hwirq;
 
 	/* Clear events */
-	dev_dbg(d->chip->parent_device, "irq_mask: %u.%u\n", gpio, d->irq);
+	//dev_dbg(d->chip->parent_device, "irq_mask: %u.%u\n", gpio, d->irq);
 	iowrite32(BIT(gpio), bank->base + NPCM8XX_GP_N_EVENC);
 }
 
@@ -333,7 +333,7 @@ static void npcmgpio_irq_unmask(struct irq_data *d)
 	unsigned int gpio = d->hwirq;
 
 	/* Enable events */
-	dev_dbg(d->chip->parent_device, "irq_unmask: %u.%u\n", gpio, d->irq);
+	//dev_dbg(d->chip->parent_device, "irq_unmask: %u.%u\n", gpio, d->irq);
 	iowrite32(BIT(gpio), bank->base + NPCM8XX_GP_N_EVENS);
 }
 
@@ -343,7 +343,7 @@ static unsigned int npcmgpio_irq_startup(struct irq_data *d)
 	unsigned int gpio = d->hwirq;
 
 	/* active-high, input, clear interrupt, enable interrupt */
-	dev_dbg(d->chip->parent_device, "startup: %u.%u\n", gpio, d->irq);
+	//dev_dbg(d->chip->parent_device, "startup: %u.%u\n", gpio, d->irq);
 	npcmgpio_direction_input(gc, gpio);
 	npcmgpio_irq_ack(d);
 	npcmgpio_irq_unmask(d);
